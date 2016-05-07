@@ -1,3 +1,5 @@
+import java.sql.Date;
+
 /**
  * Created by Dotin school 6 on 5/4/2016.
  */
@@ -5,7 +7,7 @@ public class RealCustomerType {
     private String name;
     private String lastName;
     private String fatherName;
-    private String birthDate;
+    private Date birthDate;
     private String nationalCode;
     private int personId;
 
@@ -33,11 +35,11 @@ public class RealCustomerType {
         this.name = name;
     }
 
-    public String getBirthDate() {
+    public Date getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
 

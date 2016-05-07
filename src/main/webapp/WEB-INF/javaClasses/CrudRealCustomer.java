@@ -10,19 +10,19 @@ public class CrudRealCustomer{
 
         final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
         final String DB_URL = "jdbc:mysql://localhost/EMP";
-        final String user = "root";
-        final String passWord = "root";
+        final String USER = "root";
+        final String PASSWORD = "root";
         Connection connection = null;
 
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-            connection= DriverManager.getConnection(DB_URL,user,passWord);
+            Class.forName(JDBC_DRIVER);
+            connection= DriverManager.getConnection(DB_URL,USER,PASSWORD);
         }catch (Exception e){
             System.out.println("Exception is: "+e);
         }
 return connection;
     }
-    public static int save(RealCustomerType realCustomer){
+    public static int insert(RealCustomerType realCustomer){
         int status=0;
         try {
             Connection connection=CrudRealCustomer.getConnection();
@@ -31,7 +31,7 @@ return connection;
             statement.setString(2,realCustomer.getName());
             statement.setString(3,realCustomer.getLastName());
             statement.setString(4,realCustomer.getFatherName());
-            statement.setString(5,realCustomer.getBirthDate());
+            statement.setDate(5, Date.valueOf(String.valueOf(realCustomer.getBirthDate())));
             statement.setString(6,realCustomer.getNationalCode());
             status=statement.executeUpdate();
             connection.close();
@@ -40,7 +40,10 @@ return connection;
         }
         return status;
     }
-
+public static RealCustomerType getRealCustomerById(int id){
+    RealCustomerType realCustomerType=new RealCustomerType();
+    return  null;
+}
 
     public static int update(RealCustomerType realCustomer) throws SQLException {
         int status=0;
@@ -49,7 +52,7 @@ return connection;
         statement.setString(1,realCustomer.getName());
         statement.setString(2,realCustomer.getLastName());
         statement.setString(3,realCustomer.getFatherName());
-        statement.setString(4,realCustomer.getBirthDate());
+        statement.setDate(4, Date.valueOf(String.valueOf(realCustomer.getBirthDate())));
         statement.setInt(5, realCustomer.getPersonId());
         status=statement.executeUpdate();
         connection.close();
@@ -61,30 +64,30 @@ public static List<RealCustomerType> getRecords() throws SQLException {
     RealCustomerType realCustomer=new RealCustomerType();
     String checkIf="where ";
     if (realCustomer.getBirthDate()!=null) {
-        checkIf = "birthDate=" + realCustomer.getBirthDate()+"AND";
+        checkIf = "birthDate=" + realCustomer.getBirthDate().toString()+ " AND";
     }
     if (realCustomer.getFatherName()!=null){
-            checkIf=checkIf+" fatherName like "+realCustomer.getName() +"AND ";
+            checkIf=checkIf+" fatherName like "+realCustomer.getName() +" AND ";
         }
     if (realCustomer.getLastName()!=null){
         checkIf=checkIf+realCustomer.getLastName()+"AND";
     }
     if (realCustomer.getNationalCode()!=null){
-        checkIf=checkIf+" nationalCode like "+realCustomer.getNationalCode()+" and ";
+        checkIf=checkIf+" nationalCode like "+realCustomer.getNationalCode()+" AND ";
     }
 if (String.valueOf(realCustomer.getPersonId()) != null){
-    checkIf=checkIf+"person_id="+realCustomer.getPersonId()+"AND ";
+    checkIf=checkIf+"person_id="+realCustomer.getPersonId()+" AND ";
 }
     checkIf=checkIf+"1=1";
 
-    PreparedStatement statement=connection.prepareStatement("select  * from banking.real_customer "+checkIf);
+    PreparedStatement statement=connection.prepareStatement("select * from banking.real_customer "+checkIf);
     ResultSet resultSet=statement.executeQuery();
     while (resultSet.next()){
         realCustomer.setPersonId(resultSet.getInt(1));
         realCustomer.setName(resultSet.getString(2));
         realCustomer.setLastName(resultSet.getString(3));
         realCustomer.setFatherName(resultSet.getString(4));
-        realCustomer.setBirthDate(resultSet.getString(5));
+        realCustomer.setBirthDate(resultSet.getDate(5));
         realCustomer.setNationalCode(resultSet.getString(6));
    list.add(realCustomer);
     }
@@ -93,11 +96,13 @@ if (String.valueOf(realCustomer.getPersonId()) != null){
 }
 
 
-public static int delete(int personId) throws SQLException {
+public static int delete(int id) throws SQLException {
     int status=0;
     Connection connection=CrudRealCustomer.getConnection();
-    PreparedStatement statement=connection.prepareStatement("delete from banking.real_customer where person_id=? ");
-    statement.setInt(1,personId);// edame darad... hameye maghadir ra besanj
+
+    PreparedStatement statement=connection.prepareStatement("delete from banking.real_customer where person_id=?");
+    statement.setInt(1,id);
+
     status=statement.executeUpdate();
     connection.close();
     return status;
